@@ -1,5 +1,5 @@
 // File: MenuBigBand.js
-// Date: 2021-12-04
+// Date: 2021-12-05
 // Author: Gunnar Lidén
 
 // Inhalt
@@ -18,21 +18,6 @@ var g_device_desktop_laptop = "Undefined";
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////// End Global Parameters ///////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////
-
-///////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////// Start Menu Event Functions //////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////
-
-// User clicked a menu item
-function mainBigBandMenuItemClicked(i_name_html_file)
-{
-    alert("mainBigBandMenuItemClicked HTML file: " + i_name_html_file);
-
-} // mainBigBandMenuItemClicked
-
-///////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////// End Menu Event Functions ////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -72,6 +57,21 @@ class MenuBigBand
         // The corresponding number array for smartphone dropdown
         this.m_drop_down_number_array = [];
 
+        // The width of the desktop menu button as integer. When used it is px
+        this.m_desktop_button_width_int = 90;
+
+        // Margin right for the desktop menu button as integer. When used it is px
+        this.m_desktop_button_margin_right_int = 5;        
+
+        // Margin top and bottom for the desktop menu button as integer. When used it is px
+        this.m_desktop_button_margin_top_bottom_int = 10;        
+        
+        // Padding top and bottom for the desktop menu button as integer. When used it is px
+        this.m_desktop_button_padding_top_bottom_int = 10;  
+
+        // Desktop menu button color
+        this.m_desktop_button_background_color = 'rgb(44, 61, 158)';          
+
         // Initialization
         // ==============
 
@@ -80,6 +80,18 @@ class MenuBigBand
         this.setControl();        
     
     } // constructor
+
+    // Event functions
+    // ===============
+
+    // User clicked a menu item
+    static menuItemClicked(i_name_html_file)
+    {
+        // alert("MenuBigBand.menuItemClicked HTML file: " + i_name_html_file);
+
+        window.location = i_name_html_file;
+
+    } // menuItemClicked    
 
     // Get HTML strings for the menu buttons
     // =====================================
@@ -101,13 +113,37 @@ class MenuBigBand
     // Get the HTML string for the desktop main menu
     getHtmlDesktopString()
     {
-        var main_menu_index = 0;
+        var ret_desktop_str = '';
 
-        var one_button_str =  this.getElementMainMenuButtonString(main_menu_index);
+        ret_desktop_str = ret_desktop_str + '<div id= "' + this.getIdDivMenuDesktop() + '" >';
 
-        return one_button_str;
+        var all_buttons_str =  this.getHtmlDesktopButtonsString();
+
+        ret_desktop_str = ret_desktop_str + all_buttons_str;
+
+        ret_desktop_str = ret_desktop_str + '</div>';
+
+        return ret_desktop_str;
 
     } // getHtmlDesktopString
+
+    // Get string defining all desktop buttons
+    getHtmlDesktopButtonsString()
+    {
+        var ret_buttons_str = '';
+
+        var n_menus = this.m_menu_name_array.length;
+
+        for (var index_menu=0; index_menu < n_menus; index_menu++)
+        {
+            var one_button_str =  this.getElementMainMenuButtonString(index_menu);
+
+            ret_buttons_str = ret_buttons_str + one_button_str;
+        }
+
+        return ret_buttons_str;
+
+    } // getHtmlDesktopButtonsString
 
     // Get the HTML string for the smartphone main menu
     getHtmlSmartphoneString()
@@ -180,7 +216,7 @@ class MenuBigBand
     {
         var file_name = this.getMainMenuHtmlFile(i_main_menu_index);
 
-	    return "mainBigBandMenuItemClicked('" + file_name + "')";
+	    return "MenuBigBand.menuItemClicked('" + file_name + "')";
 	
     } // getMainMenuEventFunctionName
 
@@ -205,6 +241,7 @@ class MenuBigBand
 
     } // getOnClickEqualString
 
+ 
     // Utility functions
     // =================
 
@@ -214,6 +251,27 @@ class MenuBigBand
         this.m_el_div_container = document.getElementById(this.m_id_div_container);
 
     } // setDivContainerElement
+
+    // Returns the identity for the <div> with the desktop menu
+    getIdDivMenuDesktop()
+    {
+        return 'id_div_big_band_menu_desktop';
+
+    } // getIdDivMenuDesktop
+
+    // Returns the <div> desktop menu element
+    getElementDivMenuDesktop()
+    {
+        return document.getElementById(this.getIdDivMenuDesktop());
+
+    } // getElementDivMenuDesktop
+
+    // Returns the identity for the <div> with the smartphone menu
+    getIdDivMenuSmartphone()
+    {
+        return 'id_div_big_band_menu_smartphone';
+
+    } // getIdDivMenuSmartphone    
 
     // Sets the control
     setControl()
@@ -225,9 +283,62 @@ class MenuBigBand
 
         var html_str = this.getHtmlString();
 
-        this.m_el_div_container.innerHTML = html_str;        
+        this.m_el_div_container.innerHTML = html_str;       
+        
+        this.setStyles();
 
     } // setControl    
+
+    // Set the styles for the desktop and smartphone menus
+    setStyles()
+    {
+        this.setStylesDesktop();
+
+    } // setStyles
+
+    // Set the styles for the desktop menu
+    setStylesDesktop()
+    {
+        var el_div_menu_desktop = this.getElementDivMenuDesktop();
+
+        var button_elements = el_div_menu_desktop.childNodes;
+
+        var n_buttons = button_elements.length;
+
+        for (var index_button=0; index_button < n_buttons; index_button++)
+        {
+            var button_el = button_elements[index_button];
+
+            button_el.style.width = this.m_desktop_button_width_int.toString() + 'px';
+
+            button_el.style.marginRight = this.m_desktop_button_margin_right_int.toString() + 'px';
+
+            button_el.style.marginTop = this.m_desktop_button_margin_top_bottom_int.toString() + 'px';
+
+            button_el.style.marginBottom = this.m_desktop_button_margin_top_bottom_int.toString() + 'px';
+
+            button_el.style.paddingTop = this.m_desktop_button_margin_top_bottom_int.toString() + 'px';
+
+            button_el.style.paddingBottom = this.m_desktop_button_padding_top_bottom_int.toString() + 'px';     
+
+            button_el.style.backgroundColor = this.m_desktop_button_background_color;     
+            
+            button_el.style.color = 'white';   
+
+            button_el.style.fontWeight = 'bold';   
+        }
+
+        var buttons_width_int = n_buttons*(this.m_desktop_button_width_int + this.m_desktop_button_margin_right_int);
+
+        el_div_menu_desktop.style.width = buttons_width_int.toString() + 'px';
+    
+        el_div_menu_desktop.style.display = 'block';
+
+        el_div_menu_desktop.style.marginLeft = 'auto';
+
+        el_div_menu_desktop.style.marginRight = 'auto';
+
+    } // setStylesDesktop
 
     // Checks
     checkContainerElement()
