@@ -16,6 +16,9 @@
 // Flag telling if it is a desktop/laptop (Undefined, TRUE or FALSE)
 var g_device_desktop_laptop = "Undefined";
 
+// The curren (selected) drop down number
+var g_select_option_number = 1;
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////// End Global Parameters ///////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -24,35 +27,42 @@ var g_device_desktop_laptop = "Undefined";
 ///////////////////////// Start Control Menu Big Band /////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////
 
+
 // Class for the jazz big band main menu
 class MenuBigBand
 {
     // Creates the instance of the class
-    constructor(i_id_div_container, i_menu_name_array, i_html_name_array, i_desktop) 
+    constructor(i_id_div_container_desktop, i_id_div_container_smartphone, i_menu_name_array, i_html_name_array) 
     {
         // Member variables
         // ================
 
         // The identity of the dropdown control for smartphone 
-        this.m_id_control = "id_smartphone_dropdown_menu";
+        this.m_id_smartphone_drop_down = "id_smartphone_dropdown_menu";
 
-        // The identity of the container for the menu control
-        this.m_id_div_container = i_id_div_container;
+        // The identity of the container for the desktop menu control
+        this.m_id_div_container_desktop = i_id_div_container_desktop;
 
-        // The container element for the menu control
-        this.m_el_div_container = null;
+        // The identity of the container for the smartphone menu control
+        this.m_id_div_container_smartphone = i_id_div_container_smartphone;
+
+        // The container element for the desktop menu control
+        this.m_el_div_container_desktop = null;
+
+        // The container element for the smartphone menu control
+        this.m_el_div_container_smartphone = null;        
 
         // The class for the menu control
-        //??? this.m_class = '';        
+        this.m_class_dropdown = '';       
+        
+        // The onchange function name. Only the name is input
+        this.m_onchange_function = 'onChangeSmartphoneMenuDropDown';
 
         // The input menu name array
         this.m_menu_name_array = i_menu_name_array;
 
         // The input array of HTML file names corresponding to m_menu_name_array
         this.m_html_name_array = i_html_name_array;
-
-        // Boolean telling if menus shall be created for Desktop or Smartphone
-        this.m_desktop = i_desktop;
 
         // The corresponding number array for smartphone dropdown
         this.m_drop_down_number_array = [];
@@ -70,7 +80,13 @@ class MenuBigBand
         this.m_desktop_button_padding_top_bottom_int = 10;  
 
         // Desktop menu button color
-        this.m_desktop_button_background_color = 'rgb(44, 61, 158)';          
+        this.m_desktop_button_background_color = 'rgb(44, 61, 158)';     
+        
+        // Width of the smartphone drop down menu
+        this.m_smartphone_drop_down_width = '250px';
+
+        // Margin left the smartphone drop down menu
+        this.m_smartphone_drop_down_margin_left = '25px';
 
         // Initialization
         // ==============
@@ -93,22 +109,27 @@ class MenuBigBand
 
     } // menuItemClicked    
 
+    // Dropdown changed
+    onChangeDropDown()
+    {
+        var el_drop_down = document.getElementById(this.m_id_smartphone_drop_down);
+
+        var select_option_number =  el_drop_down.value;
+
+        g_select_option_number = select_option_number;
+
+        var main_menu_index = select_option_number - 1;
+
+        var name_html_file = this.getMainMenuHtmlFile(main_menu_index);
+
+        // alert("MenuBigBand.onChangeDropDown select_option_number= " + select_option_number.toString() + ' name_html_file= ' + name_html_file);
+
+        window.location = name_html_file;
+
+    } // onChangeDropDown
+
     // Get HTML strings for the menu buttons
     // =====================================
-
-    // Get the HTML string for the main menu
-    getHtmlString()
-    {
-        if (this.m_desktop)
-        {
-            return this.getHtmlDesktopString();
-        }
-        else
-        {
-            return this.getHtmlSmartphoneString();
-        }
-
-    } // getHtmlString
 
     // Get the HTML string for the desktop main menu
     getHtmlDesktopString()
@@ -145,10 +166,53 @@ class MenuBigBand
 
     } // getHtmlDesktopButtonsString
 
-    // Get the HTML string for the smartphone main menu
+    // Get the HTML string for the smartphone main dropdown menu
     getHtmlSmartphoneString()
     {
-        return 'TODO';
+        var ret_smart_html_str = '';
+
+        ret_smart_html_str = ret_smart_html_str +  '<select  id="' + this.m_id_smartphone_drop_down + '" ';
+
+        if (this.m_class_dropdown.length > 0) // TODO 
+        {
+            ret_smart_html_str = ret_smart_html_str + ' class="' + this.m_class_dropdown + '" ';
+        }
+
+        ret_smart_html_str = ret_smart_html_str + ' onchange="' + this.m_onchange_function + '()" ';
+
+        ret_smart_html_str = ret_smart_html_str + '><br>'; 
+
+        var n_options = this.m_menu_name_array.length;
+
+        for (var index_name=0; index_name < n_options; index_name++)
+        {
+            var current_name = '';
+
+            var current_number_str = '';
+
+            if (index_name < this.m_menu_name_array.length)
+            {
+                current_name = this.m_menu_name_array[index_name];
+
+                current_number_str = this.m_drop_down_number_array[index_name].toString();
+            }
+            else
+            {
+                current_name = this.m_append_str;
+
+                current_number_str = n_options.toString();
+            }
+
+            var option_str = '<option value="' + current_number_str + '">' +
+                                    current_name + '</option><br>';
+
+            ret_smart_html_str = ret_smart_html_str + option_str;  
+        }        
+
+        ret_smart_html_str = ret_smart_html_str + '</select>';
+        
+
+        return ret_smart_html_str;
 
     } // getHtmlSmartphoneString    
 
@@ -248,7 +312,9 @@ class MenuBigBand
     // Sets the div element container
     setDivContainerElement()
     {
-        this.m_el_div_container = document.getElementById(this.m_id_div_container);
+        this.m_el_div_container_desktop = document.getElementById(this.m_id_div_container_desktop);
+
+        this.m_el_div_container_smartphone = document.getElementById(this.m_id_div_container_smartphone);
 
     } // setDivContainerElement
 
@@ -281,11 +347,23 @@ class MenuBigBand
             return;
         }
 
-        var html_str = this.getHtmlString();
+        var html_desktop_str = this.getHtmlDesktopString();
 
-        this.m_el_div_container.innerHTML = html_str;       
+        this.m_el_div_container_desktop.innerHTML = html_desktop_str; 
+
+        this.setNumberArray();
+
+        var html_smartphone_str = this.getHtmlSmartphoneString();
+
+        this.m_el_div_container_smartphone.innerHTML = html_smartphone_str;        
         
         this.setStyles();
+
+        var el_drop_down = document.getElementById(this.m_id_smartphone_drop_down);
+
+        var menu_name = this.getMainMenuHtmlFile(g_select_option_number - 1);
+
+        el_drop_down.value = menu_name;
 
     } // setControl    
 
@@ -293,6 +371,8 @@ class MenuBigBand
     setStyles()
     {
         this.setStylesDesktop();
+
+        this.setStylesSmartPhone();
 
     } // setStyles
 
@@ -326,6 +406,8 @@ class MenuBigBand
             button_el.style.color = 'white';   
 
             button_el.style.fontWeight = 'bold';   
+
+            button_el.style.cursor  = 'pointer';  
         }
 
         var buttons_width_int = n_buttons*(this.m_desktop_button_width_int + this.m_desktop_button_margin_right_int);
@@ -340,14 +422,55 @@ class MenuBigBand
 
     } // setStylesDesktop
 
+    // Set the styles for the smartphone menu
+    setStylesSmartPhone()
+    {
+        var el_drop_down = document.getElementById(this.m_id_smartphone_drop_down);
+
+        el_drop_down.style.backgroundColor = this.m_desktop_button_background_color;   
+
+        el_drop_down.style.width = this.m_smartphone_drop_down_width;
+        
+        el_drop_down.style.marginLeft = this.m_smartphone_drop_down_margin_left;
+
+        el_drop_down.style.marginTop = this.m_desktop_button_margin_top_bottom_int.toString() + 'px';
+
+        el_drop_down.style.marginBottom = this.m_desktop_button_margin_top_bottom_int.toString() + 'px';        
+
+        el_drop_down.style.paddingTop = this.m_desktop_button_margin_top_bottom_int.toString() + 'px';
+
+        el_drop_down.style.paddingBottom = this.m_desktop_button_padding_top_bottom_int.toString() + 'px';             
+
+        el_drop_down.style.color = 'white';   
+
+        el_drop_down.style.fontWeight = 'bold';
+
+    } // setStylesSmartPhone
+
+    // Sets the number array for smartphone dropdown 
+    setNumberArray()
+    {
+        this.m_drop_down_number_array = [];
+
+        var array_number = 0;
+        
+        for (var index_name=0; index_name < this.m_menu_name_array.length; index_name++)
+        {
+            array_number = array_number + 1;
+
+            this.m_drop_down_number_array[index_name] = array_number;
+        }
+
+    } // setNumberArray
+
     // Checks
     checkContainerElement()
     {
         var ret_b_check = true;
 
-        if (null == this.m_el_div_container)
+        if (null == this.m_el_div_container_desktop)
         {
-            alert("MenuBigBand error: HTML element with id= " + this.m_id_div_container + " does not exist.");
+            alert("MenuBigBand error: HTML element with id= " + this.m_id_div_container_desktop + " does not exist.");
 
             ret_b_check = false;
         }  
@@ -479,21 +602,21 @@ function eventDeviceWindowSize()
 
 function displayHideContentDivs()
 {
-    var el_div_container_desktop = getElementDivContentDesktop();
+    var el_div_container_desktop_desktop = getElementDivContentDesktop();
 
-    var el_div_container_smartphone = getElementDivContentSmartphone();
+    var el_div_container_desktop_smartphone = getElementDivContentSmartphone();
 
     if (browserWindowHasDesktopWidth())
     {   
-        el_div_container_desktop.style.display = 'block';
+        el_div_container_desktop_desktop.style.display = 'block';
 
-        el_div_container_smartphone.style.display = 'none';
+        el_div_container_desktop_smartphone.style.display = 'none';
     }
     else
     {
-        el_div_container_desktop.style.display = 'none';
+        el_div_container_desktop_desktop.style.display = 'none';
 
-        el_div_container_smartphone.style.display = 'block';
+        el_div_container_desktop_smartphone.style.display = 'block';
     }
 
 } // displayHideContentDivs
