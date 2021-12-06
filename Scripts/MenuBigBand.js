@@ -1,5 +1,5 @@
 // File: MenuBigBand.js
-// Date: 2021-12-05
+// Date: 2021-12-06
 // Author: Gunnar Lidén
 
 // Inhalt
@@ -16,9 +16,6 @@
 // Flag telling if it is a desktop/laptop (Undefined, TRUE or FALSE)
 var g_device_desktop_laptop = "Undefined";
 
-// The curren (selected) drop down number
-var g_select_option_number = 1;
-
 ///////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////// End Global Parameters ///////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -32,7 +29,7 @@ var g_select_option_number = 1;
 class MenuBigBand
 {
     // Creates the instance of the class
-    constructor(i_id_div_container_desktop, i_id_div_container_smartphone, i_menu_name_array, i_html_name_array) 
+    constructor(i_id_div_container_desktop, i_id_div_container_smartphone, i_menu_name_array, i_html_name_array, i_html_file_name) 
     {
         // Member variables
         // ================
@@ -45,6 +42,9 @@ class MenuBigBand
 
         // The identity of the container for the smartphone menu control
         this.m_id_div_container_smartphone = i_id_div_container_smartphone;
+
+        // Current HTML file name (current web page)
+        this.m_html_file_name = i_html_file_name;
 
         // The container element for the desktop menu control
         this.m_el_div_container_desktop = null;
@@ -115,8 +115,6 @@ class MenuBigBand
         var el_drop_down = document.getElementById(this.m_id_smartphone_drop_down);
 
         var select_option_number =  el_drop_down.value;
-
-        g_select_option_number = select_option_number;
 
         var main_menu_index = select_option_number - 1;
 
@@ -275,6 +273,48 @@ class MenuBigBand
 
     } // getMainMenuHtmlFile
 
+    // Get the option number for a given HTML file name (web page)
+    getMainMenuSelectOptionNumber(i_html_file)
+    {
+        var ret_number = -1;
+
+        var index_last_slash = -9;
+
+        for (var index_char=0; index_char < i_html_file.length; index_char++)
+        {
+            var current_char = i_html_file.substring(index_char, 1);
+
+            if (current_char == '/')
+            {
+                index_last_slash = index_char;
+            }
+        }
+
+        var html_file = i_html_file;
+
+        if (index_last_slash >= 0)
+        {
+            html_file = i_html_file.substring(index_last_slash + 1);
+        }
+
+        var n_file_names = this.m_html_name_array.length;
+
+        for (var index_name=0; index_name < n_file_names; index_name++)
+        {
+            var current_name = this.m_html_name_array[index_name];
+
+            if (html_file == current_name)
+            {
+                ret_number = index_name + 1;
+
+                break;
+            }
+        }
+
+        return ret_number;
+
+    } // getMainMenuSelectOptionNumber
+
     // Returns the main menu event function name for a given main menu index
     getMainMenuEventFunctionName(i_main_menu_index)
     {
@@ -361,9 +401,9 @@ class MenuBigBand
 
         var el_drop_down = document.getElementById(this.m_id_smartphone_drop_down);
 
-        var menu_name = this.getMainMenuHtmlFile(g_select_option_number - 1);
+        var select_option_number = this.getMainMenuSelectOptionNumber(this.m_html_file_name);
 
-        el_drop_down.value = menu_name;
+        el_drop_down.value = select_option_number;
 
     } // setControl    
 
