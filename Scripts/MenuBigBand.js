@@ -282,7 +282,7 @@ class MenuBigBand
 
         for (var index_char=0; index_char < i_html_file.length; index_char++)
         {
-            var current_char = i_html_file.substring(index_char, 1);
+            var current_char = i_html_file.substring(index_char, index_char + 1);
 
             if (current_char == '/')
             {
