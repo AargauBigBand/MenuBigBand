@@ -1,5 +1,5 @@
 // File: MenuBigBand.js
-// Date: 2021-12-06
+// Date: 2021-12-12
 // Author: Gunnar Lidén
 
 // Inhalt
@@ -88,6 +88,12 @@ class MenuBigBand
         // Margin left the smartphone drop down menu
         this.m_smartphone_drop_down_margin_left = '25px';
 
+        // Text align for the smartphone drop down menu
+        this.m_smartphone_drop_down_text_align = 'center';
+
+        // Text font size for the smartphone drop down menu
+        this.m_smartphone_drop_down_font_size = 'inherit';        
+
         // Initialization
         // ==============
 
@@ -125,6 +131,28 @@ class MenuBigBand
         window.location = name_html_file;
 
     } // onChangeDropDown
+
+    // Set functions
+    // =============
+
+    // Set the left margin for the smartphone dropdown
+    setDropdownMarginLeft(i_smartphone_drop_down_margin_left)
+    {
+        this.m_smartphone_drop_down_margin_left = i_smartphone_drop_down_margin_left;
+
+        this.setControl();
+
+    } // setDropdownMarginLeft
+
+    // Set the left margin for the smartphone dropdown
+    setDropdownWidth(i_smartphone_drop_down_width)
+    {
+        this.m_smartphone_drop_down_width = i_smartphone_drop_down_width;
+
+        this.setControl();
+
+    } // setDropdownWidth
+
 
     // Get HTML strings for the menu buttons
     // =====================================
@@ -484,6 +512,10 @@ class MenuBigBand
         el_drop_down.style.color = 'white';   
 
         el_drop_down.style.fontWeight = 'bold';
+
+        el_drop_down.style.textAlign = this.m_smartphone_drop_down_text_align;
+
+        el_drop_down.style.fontSize = this.m_smartphone_drop_down_font_size;
 
     } // setStylesSmartPhone
 
