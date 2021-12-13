@@ -1,6 +1,6 @@
 // File: MenuBigBand.js
 // Date: 2021-12-13
-// Author: Gunnar Lidén
+// Author: Gunnar Lidén, Lehrling Heller
 
 // Inhalt
 // =============
