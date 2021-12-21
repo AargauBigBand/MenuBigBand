@@ -1,5 +1,5 @@
 // File: MenuBigBand.js
-// Date: 2021-12-12
+// Date: 2021-12-21
 // Author: Gunnar Lidén
 
 // Inhalt
@@ -148,6 +148,15 @@ class MenuBigBand
     setDropdownWidth(i_smartphone_drop_down_width)
     {
         this.m_smartphone_drop_down_width = i_smartphone_drop_down_width;
+
+        this.setControl();
+
+    } // setDropdownWidth
+
+    // Set the width of the desktop button
+    setDesktopButtonWidth(i_desktop_button_width_int)
+    {
+        this.m_desktop_button_width_int = i_desktop_button_width_int;
 
         this.setControl();
 
