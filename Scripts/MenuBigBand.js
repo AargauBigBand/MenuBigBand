@@ -1,5 +1,5 @@
 // File: MenuBigBand.js
-// Date: 2021-12-21
+// Date: 2021-12-22
 // Author: Gunnar Lidén
 
 // Inhalt
@@ -26,10 +26,15 @@ var g_device_desktop_laptop = "Undefined";
 
 
 // Class for the jazz big band main menu
+// Input data:
+// Identity for the desktop menu <div> 
+// Identity for the smartphone menu <div> 
+// Array of menu names
+// Array of HTML file names corresponding to the menu names
 class MenuBigBand
 {
     // Creates the instance of the class
-    constructor(i_id_div_container_desktop, i_id_div_container_smartphone, i_menu_name_array, i_html_name_array, i_html_file_name) 
+    constructor(i_id_div_menu_desktop, i_id_div_menu_smartphone, i_menu_name_array, i_html_name_array, i_html_file_name) 
     {
         // Member variables
         // ================
@@ -38,19 +43,19 @@ class MenuBigBand
         this.m_id_smartphone_drop_down = "id_smartphone_dropdown_menu";
 
         // The identity of the container for the desktop menu control
-        this.m_id_div_container_desktop = i_id_div_container_desktop;
+        this.m_id_div_menu_desktop = i_id_div_menu_desktop;
 
         // The identity of the container for the smartphone menu control
-        this.m_id_div_container_smartphone = i_id_div_container_smartphone;
+        this.m_id_div_menu_smartphone = i_id_div_menu_smartphone;
 
         // Current HTML file name (current web page)
         this.m_html_file_name = i_html_file_name;
 
         // The container element for the desktop menu control
-        this.m_el_div_container_desktop = null;
+        this.m_el_div_menu_desktop = null;
 
         // The container element for the smartphone menu control
-        this.m_el_div_container_smartphone = null;        
+        this.m_el_div_menu_smartphone = null;        
 
         // The class for the menu control
         this.m_class_dropdown = '';       
@@ -79,8 +84,11 @@ class MenuBigBand
         // Padding top and bottom for the desktop menu button as integer. When used it is px
         this.m_desktop_button_padding_top_bottom_int = 10;  
 
-        // Desktop menu button color
-        this.m_desktop_button_background_color = 'rgb(44, 61, 158)';     
+        // Desktop menu button background color
+        this.m_desktop_button_background_color = 'rgb(44, 61, 158)'; 
+
+        // Desktop menu button pen color
+        this.m_desktop_button_pen_color = 'white';
         
         // Width of the smartphone drop down menu
         this.m_smartphone_drop_down_width = '250px';
@@ -138,6 +146,11 @@ class MenuBigBand
     // Set the left margin for the smartphone dropdown
     setDropdownMarginLeft(i_smartphone_drop_down_margin_left)
     {
+        if (!this.checkDimensionInput(i_smartphone_drop_down_margin_left))
+        {
+            return
+        }
+
         this.m_smartphone_drop_down_margin_left = i_smartphone_drop_down_margin_left;
 
         this.setControl();
@@ -147,6 +160,11 @@ class MenuBigBand
     // Set the left margin for the smartphone dropdown
     setDropdownWidth(i_smartphone_drop_down_width)
     {
+        if (!this.checkDimensionInput(i_smartphone_drop_down_width))
+        {
+            return
+        }
+
         this.m_smartphone_drop_down_width = i_smartphone_drop_down_width;
 
         this.setControl();
@@ -154,14 +172,42 @@ class MenuBigBand
     } // setDropdownWidth
 
     // Set the width of the desktop button
-    setDesktopButtonWidth(i_desktop_button_width_int)
+    setDesktopButtonWidth(i_desktop_button_width)
     {
-        this.m_desktop_button_width_int = i_desktop_button_width_int;
+        if (!this.checkDimensionInput(i_desktop_button_width))
+        {
+            return
+        }
+
+        var index_px= i_desktop_button_width.indexOf('px');
+
+        var start_part_str = i_desktop_button_width.substring(0, index_px);
+
+        var desktop_button_width_int = parseInt(start_part_str);
+
+        this.m_desktop_button_width_int = desktop_button_width_int;
 
         this.setControl();
 
     } // setDropdownWidth
 
+    // Set the desktop button background color
+    setDesktopButtonBackgroundColor(i_color_str)
+    {
+        this.m_desktop_button_background_color = i_color_str;
+
+        this.setControl();
+
+    } // setDesktopButtonColor
+
+    // Set the desktop button pen color
+    setDesktopButtonPenColor(i_color_str)
+    {
+        this.m_desktop_button_pen_color = i_color_str;
+
+        this.setControl();
+
+    } // setDesktopButtonPenColor
 
     // Get HTML strings for the menu buttons
     // =====================================
@@ -389,9 +435,9 @@ class MenuBigBand
     // Sets the div element container
     setDivContainerElement()
     {
-        this.m_el_div_container_desktop = document.getElementById(this.m_id_div_container_desktop);
+        this.m_el_div_menu_desktop = document.getElementById(this.m_id_div_menu_desktop);
 
-        this.m_el_div_container_smartphone = document.getElementById(this.m_id_div_container_smartphone);
+        this.m_el_div_menu_smartphone = document.getElementById(this.m_id_div_menu_smartphone);
 
     } // setDivContainerElement
 
@@ -426,13 +472,13 @@ class MenuBigBand
 
         var html_desktop_str = this.getHtmlDesktopString();
 
-        this.m_el_div_container_desktop.innerHTML = html_desktop_str; 
+        this.m_el_div_menu_desktop.innerHTML = html_desktop_str; 
 
         this.setNumberArray();
 
         var html_smartphone_str = this.getHtmlSmartphoneString();
 
-        this.m_el_div_container_smartphone.innerHTML = html_smartphone_str;        
+        this.m_el_div_menu_smartphone.innerHTML = html_smartphone_str;        
         
         this.setStyles();
 
@@ -480,7 +526,7 @@ class MenuBigBand
 
             button_el.style.backgroundColor = this.m_desktop_button_background_color;     
             
-            button_el.style.color = 'white';   
+            button_el.style.color = this.m_desktop_button_pen_color;   
 
             button_el.style.fontWeight = 'bold';   
 
@@ -549,9 +595,9 @@ class MenuBigBand
     {
         var ret_b_check = true;
 
-        if (null == this.m_el_div_container_desktop)
+        if (null == this.m_el_div_menu_desktop)
         {
-            alert("MenuBigBand error: HTML element with id= " + this.m_id_div_container_desktop + " does not exist.");
+            alert("MenuBigBand error: HTML element with id= " + this.m_id_div_menu_desktop + " does not exist.");
 
             ret_b_check = false;
         }  
@@ -562,12 +608,134 @@ class MenuBigBand
 
     } // checkContainerElement    
 
+    // Checks the dimension for a length: Height, width, ...
+    checkDimensionInput(i_height_width)
+    {
+        var ret_px_check = true;
+
+        var height_width_str = i_height_width.toString();
+
+        var index_px= height_width_str.indexOf('px');
+
+        if (index_px < 0)
+        {
+            alert("MenuBigBand error: Masse wie Breite und Höhe müssen als px eingeben werden. Eingabe '" + i_height_width + "' ist nicht erlaubt.");
+
+            ret_px_check = false;
+        }
+
+        if (index_px >= 0)
+        {
+            var end_part_str = height_width_str.substring(index_px);
+
+            if (end_part_str.length != 2)
+            {
+                alert("MenuBigBand error: Masse wie Breite und Höhe müssen müssen mit px enden. Eingabe '" + i_height_width + "' ist nicht erlaubt.");
+
+                ret_px_check = false;
+            }
+        }
+
+        if (index_px >= 0)
+        {
+            var start_part_str = height_width_str.substring(0, index_px);
+
+            if (start_part_str.length == 0)
+            {
+                alert("MenuBigBand error: Eingabe '" + i_height_width + "' ohne Zahl ist nicht erlaubt.");
+
+                ret_px_check = false;                
+            }
+
+            for (var index_char=0; index_char < start_part_str.length; index_char++)
+            {
+                var current_char = start_part_str.substring(index_char, index_char + 1);
+
+                var current_char_ok = true;
+
+                if (current_char == "0" ||
+                    current_char == "1" ||
+                    current_char == "2" ||
+                    current_char == "3" ||
+                    current_char == "4" ||
+                    current_char == "5" ||
+                    current_char == "6" ||
+                    current_char == "7" ||
+                    current_char == "8" ||
+                    current_char == "9"   )
+                {
+                    current_char_ok = true;
+                }
+                else
+                {
+                    current_char_ok = false;
+                }
+
+                if (!current_char_ok)
+                {
+                    alert("MenuBigBand error: Für die Eingabe '" + i_height_width + "' muss '" + start_part_str + "' eine Zahl sein");
+
+                    ret_px_check = false;     
+
+                    break;
+                }
+
+
+            } // index_char
+
+        } // index_px >= 0
+
+        return ret_px_check;
+
+    } // checkDimensionInput
+
 } // MenuBigBand
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////// End Control Menu Big Band ////////////////////////////////////////
+///////////////////////// End Control Menu Big Band ///////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////// Start Class DesktopSmartphone ///////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
+
+// Class for the handling of the device type, i.e. if desktop or smartphone
+// Input data:
+// Identity of the container <div> that displays the desktop content
+// Identity of the container <div> that displays the smartphone content
+// The name of the current web page defined by the HTML file name
+class DesktopSmartphone
+{
+    // Creates the instance of the class
+    constructor(i_id_div_container_desktop, i_id_div_container_smartphone, i_html_file_name) 
+    {
+        // Member variables
+        // ================
+
+        // The identity of the container <div> for the desktop containt
+        this.m_id_div_container_desktop = i_id_div_container_desktop;
+
+        // The identity of the container <div> for the smartphone content
+        this.m_id_div_container_smartphone = i_id_div_container_smartphone;
+
+        // Current HTML file name (current web page)
+        this.m_html_file_name = i_html_file_name;     
+        
+        // The container <div> element for the desktop content
+        this.m_el_div_container_desktop = null;
+
+        // The container <div> element for the smartphone content
+        this.m_el_div_container_smartphone = null;   
+
+    } // constructor
+
+} // DesktopSmartphone
+
+///////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////// End Class DesktopSmartphone /////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////// Start Device Types //////////////////////////////////////////////
