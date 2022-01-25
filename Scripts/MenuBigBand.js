@@ -1,5 +1,5 @@
 // File: MenuBigBand.js
-// Date: 2021-12-22
+// Date: 2022-01-25
 // Author: Gunnar Lidén
 
 // Inhalt
@@ -30,11 +30,14 @@ var g_device_desktop_laptop = "Undefined";
 // Identity for the desktop menu <div> 
 // Identity for the smartphone menu <div> 
 // Array of menu names
-// Array of HTML file names corresponding to the menu names
+// Array of desktop HTML file names corresponding to the menu names
+// Array of smartphone HTML file names corresponding to the menu names
+// The last input array may have the value null. In this case will the 
+// desktop HTML file names also be used for smartphone
 class MenuBigBand
 {
     // Creates the instance of the class
-    constructor(i_id_div_menu_desktop, i_id_div_menu_smartphone, i_menu_name_array, i_html_name_array, i_html_file_name) 
+    constructor(i_id_div_menu_desktop, i_id_div_menu_smartphone, i_menu_name_array, i_html_name_desktop_array, i_html_name_smartphone_array) 
     {
         // Member variables
         // ================
@@ -49,7 +52,8 @@ class MenuBigBand
         this.m_id_div_menu_smartphone = i_id_div_menu_smartphone;
 
         // Current HTML file name (current web page)
-        this.m_html_file_name = i_html_file_name;
+        //QQ this.m_html_file_name = i_html_file_name;
+        this.m_html_file_name = null;
 
         // The container element for the desktop menu control
         this.m_el_div_menu_desktop = null;
@@ -67,7 +71,10 @@ class MenuBigBand
         this.m_menu_name_array = i_menu_name_array;
 
         // The input array of HTML file names corresponding to m_menu_name_array
-        this.m_html_name_array = i_html_name_array;
+        this.m_html_name_desktop_array = i_html_name_desktop_array;
+
+        // The input array of HTML file names for smartphone corresponding to m_menu_name_array
+        this.m_html_name_smartphone_array = i_html_name_smartphone_array;
 
         // The corresponding number array for smartphone dropdown
         this.m_drop_down_number_array = [];
@@ -107,9 +114,19 @@ class MenuBigBand
 
         this.setDivContainerElement();
 
-        this.setControl();        
+        this.checkSetControl();
     
     } // constructor
+
+    // Check input data and set control if data is OK
+    checkSetControl()
+    {
+        if (this.checkConstructorInputData())
+        {
+            this.setControl();
+        }
+
+    } // checkSetControl
 
     // Event functions
     // ===============
@@ -132,7 +149,7 @@ class MenuBigBand
 
         var main_menu_index = select_option_number - 1;
 
-        var name_html_file = this.getMainMenuHtmlFile(main_menu_index);
+        var name_html_file = this.getDesktopMainMenuHtmlFile(main_menu_index);
 
         // alert("MenuBigBand.onChangeDropDown select_option_number= " + select_option_number.toString() + ' name_html_file= ' + name_html_file);
 
@@ -340,51 +357,74 @@ class MenuBigBand
 
     } // getMainMenuName
 
-    // Get the main menu name
-    getMainMenuHtmlFile(i_main_menu_index)
+    // Get the desktop HTML file name corresponding to the main menu names
+    getDesktopMainMenuHtmlFile(i_main_menu_index)
     {
-        var n_file_names = this.m_html_name_array.length;
+        var n_file_names = this.m_html_name_desktop_array.length;
 
         if (i_main_menu_index < 0 || i_main_menu_index > n_file_names - 1)
         {
-            return 'MenuBigBand.getMainMenuHtmlFile Error Index= ' + i_main_menu_index.toString();
+            return 'MenuBigBand.getDesktopMainMenuHtmlFile Error Index= ' + i_main_menu_index.toString();
         }
         else
         {
-            return this.m_html_name_array[i_main_menu_index];
+            return this.m_html_name_desktop_array[i_main_menu_index];
         }
 
-    } // getMainMenuHtmlFile
+    } // getDesktopMainMenuHtmlFile
+
+    // Get the smartphone HTML file name corresponding to the main menu names
+    getSmartphoneMainMenuHtmlFile(i_main_menu_index)
+    {
+        if (!this.smartphoneHtmlFilesDefined())
+        {
+            return 'MenuBigBand.getSmartphoneMainMenuHtmlFile Error Array m_html_name_smartphone_array is not set';
+        }
+
+        var n_smartphone_file_names = this.m_html_name_smartphone_array.length;
+
+        if (i_main_menu_index < 0 || i_main_menu_index > n_smartphone_file_names - 1)
+        {
+            return 'MenuBigBand.getSmartphoneMainMenuHtmlFile Error Index= ' + i_main_menu_index.toString();
+        }
+        else
+        {
+            return this.m_html_name_smartphone_array[i_main_menu_index];
+        }
+
+    } // getSmartphoneMainMenuHtmlFile
+    
+    // Returns true if HTML file names for smartphones are defined
+    smartphoneHtmlFilesDefined()
+    {
+        if (m_html_name_smartphone_array == null)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+
+    } // smartphoneHtmlFilesDefined
 
     // Get the option number for a given HTML file name (web page)
     getMainMenuSelectOptionNumber(i_html_file)
     {
         var ret_number = -1;
 
-        var index_last_slash = -9;
+        var html_file = MenuBigBand.getUrlFileName(i_html_file);
 
-        for (var index_char=0; index_char < i_html_file.length; index_char++)
-        {
-            var current_char = i_html_file.substring(index_char, index_char + 1);
-
-            if (current_char == '/')
-            {
-                index_last_slash = index_char;
-            }
-        }
-
-        var html_file = i_html_file;
-
-        if (index_last_slash >= 0)
-        {
-            html_file = i_html_file.substring(index_last_slash + 1);
-        }
-
-        var n_file_names = this.m_html_name_array.length;
+        var n_file_names = this.m_html_name_desktop_array.length;
 
         for (var index_name=0; index_name < n_file_names; index_name++)
         {
-            var current_name = this.m_html_name_array[index_name];
+            var current_name = this.m_html_name_desktop_array[index_name];
+
+            if (this.currentWebPageIsForSmartphone() && this.m_html_name_smartphone_array != null)
+            {
+                current_name = this.m_html_name_smartphone_array[index_name];
+            }
 
             if (html_file == current_name)
             {
@@ -401,7 +441,7 @@ class MenuBigBand
     // Returns the main menu event function name for a given main menu index
     getMainMenuEventFunctionName(i_main_menu_index)
     {
-        var file_name = this.getMainMenuHtmlFile(i_main_menu_index);
+        var file_name = this.getDesktopMainMenuHtmlFile(i_main_menu_index);
 
 	    return "MenuBigBand.menuItemClicked('" + file_name + "')";
 	
@@ -465,31 +505,122 @@ class MenuBigBand
     // Sets the control
     setControl()
     {
-        if (!this.checkContainerElement())
-        {
-            return;
-        }
-
         var html_desktop_str = this.getHtmlDesktopString();
 
-        this.m_el_div_menu_desktop.innerHTML = html_desktop_str; 
+        if (this.m_el_div_menu_desktop != null)
+        {
+            this.m_el_div_menu_desktop.innerHTML = html_desktop_str; 
+        }
 
         this.setNumberArray();
 
         var html_smartphone_str = this.getHtmlSmartphoneString();
 
-        this.m_el_div_menu_smartphone.innerHTML = html_smartphone_str;        
+        if (this.m_el_div_menu_smartphone != null)
+        {
+            this.m_el_div_menu_smartphone.innerHTML = html_smartphone_str; 
+
+            var el_drop_down = document.getElementById(this.m_id_smartphone_drop_down);
+
+            var select_option_number = this.getMainMenuSelectOptionNumber(MenuBigBand.getCurrentWebPage());
+    
+            el_drop_down.value = select_option_number;
+        }
         
         this.setStyles();
 
-        var el_drop_down = document.getElementById(this.m_id_smartphone_drop_down);
-
-        var select_option_number = this.getMainMenuSelectOptionNumber(this.m_html_file_name);
-
-        el_drop_down.value = select_option_number;
-
     } // setControl    
 
+    // Returns the current HTML file name (the current web page) without path
+    static getCurrentWebPage()
+    {
+        return MenuBigBand.getUrlFileName(window.location.pathname);
+
+    } // getCurrentWebPage
+
+    // Returns the file name without path
+    static getUrlFileName(i_url_path)
+    {
+        var ret_file_name = i_url_path;
+
+        var index_last_slash = -9;
+
+        for (var index_char=0; index_char < i_url_path.length; index_char++)
+        {
+            var current_char = i_url_path.substring(index_char, index_char + 1);
+
+            if (current_char == '/')
+            {
+                index_last_slash = index_char;
+            }
+        }
+
+        if (index_last_slash >= 0)
+        {
+            ret_file_name = i_url_path.substring(index_last_slash + 1);
+        }
+
+        return ret_file_name;
+       
+    } // getUrlFileName
+
+    // Returns true if the current web page is for desktop
+    currentWebPageIsForDesktop()
+    {
+        var ret_b_desktop = false;
+
+        var n_names = this.m_html_name_desktop_array.length;
+
+        var current_web_page = MenuBigBand.getCurrentWebPage();
+
+        for (var index_name=0; index_name < n_names; index_name++)
+        {
+            var desktop_html = this.m_html_name_desktop_array[index_name];
+
+            if (desktop_html == current_web_page)
+            {
+                ret_b_desktop = true;
+
+                break;
+            }
+
+        }
+
+        return ret_b_desktop;
+
+    } // currentWebPageIsForDesktop
+
+    // Returns true if the current web page is for smartphone
+    currentWebPageIsForSmartphone()
+    {
+        var ret_b_smartphone = false;
+		
+		if (this.m_html_name_desktop_array == null)
+		{
+			return ret_b_smartphone;
+		}
+
+        var n_names = this.m_html_name_desktop_array.length;
+
+        var current_web_page = MenuBigBand.getCurrentWebPage();
+
+        for (var index_name=0; index_name < n_names; index_name++)
+        {
+            var smartphone_html = this.m_html_name_desktop_array[index_name];
+
+            if (smartphone_html == current_web_page)
+            {
+                ret_b_smartphone = true;
+
+                break;
+            }
+
+        }
+
+        return ret_b_smartphone;
+
+    } // currentWebPageIsForSmartphone
+	
     // Set the styles for the desktop and smartphone menus
     setStyles()
     {
@@ -502,6 +633,11 @@ class MenuBigBand
     // Set the styles for the desktop menu
     setStylesDesktop()
     {
+        if (this.m_el_div_menu_desktop == null)
+        {
+            return;
+        }
+
         var el_div_menu_desktop = this.getElementDivMenuDesktop();
 
         var button_elements = el_div_menu_desktop.childNodes;
@@ -548,6 +684,11 @@ class MenuBigBand
     // Set the styles for the smartphone menu
     setStylesSmartPhone()
     {
+        if (this.m_el_div_menu_smartphone == null)
+        {
+            return;
+        }
+
         var el_drop_down = document.getElementById(this.m_id_smartphone_drop_down);
 
         el_drop_down.style.backgroundColor = this.m_desktop_button_background_color;   
@@ -590,23 +731,21 @@ class MenuBigBand
 
     } // setNumberArray
 
-    // Checks
-    checkContainerElement()
+    // Check 
+    checkContainerElementMenuDesktop()
     {
         var ret_b_check = true;
 
         if (null == this.m_el_div_menu_desktop)
         {
-            alert("MenuBigBand error: HTML element with id= " + this.m_id_div_menu_desktop + " does not exist.");
+            alert("MenuBigBand: HTML element with id= " + this.m_id_div_menu_desktop + " does not exist.");
 
             ret_b_check = false;
         }  
 
-        // TODO Check input arrays
-        
         return ret_b_check;
 
-    } // checkContainerElement    
+    } // checkContainerElementMenuDesktop    
 
     // Checks the dimension for a length: Height, width, ...
     checkDimensionInput(i_height_width)
@@ -688,6 +827,77 @@ class MenuBigBand
         return ret_px_check;
 
     } // checkDimensionInput
+
+    // Check input data to the constructor
+    checkConstructorInputData()
+    {
+        if (this.currentWebPageIsForDesktop())
+        {
+            if (!this.checkContainerElementMenuDesktop())
+            {
+                return false;
+            }
+        }
+
+
+// this.m_id_div_menu_desktop 
+// this.m_id_div_menu_smartphone
+
+        if (this.m_menu_name_array == null)
+        {
+            alert("MenuBigBand The input array of main menu names is null (not defined)");
+
+            return false;
+        }
+
+        if (this.m_menu_name_array.length == 0)
+        {
+            alert("MenuBigBand The input array of main menu names is empty (no names are defined)");
+
+            return false;
+        }
+
+        if (this.m_html_name_desktop_array == null)
+        {
+            alert("MenuBigBand The input array of desktop HTML file names is null (not defined)");
+
+            return false;
+        }
+
+        if (this.m_html_name_desktop_array.length == 0)
+        {
+            alert("MenuBigBand The input array of desktop HTML file names is empty (no HTML file names are defined)");
+
+            return false;
+        } 
+
+        if (this.m_html_name_desktop_array.length != this.m_menu_name_array.length)
+        {
+            alert("MenuBigBand The number of main menu names and the number of desktop HTML file names are not equal");
+
+            return false;
+        } 
+
+        if (this.m_html_name_smartphone_array != null)
+        {
+            if (this.m_html_name_smartphone_array.length == 0)
+            {
+                alert("MenuBigBand The input array of smartphone HTML file names is empty, i.e. no HTML file names are defined. Please note that value null also is allowed");
+    
+                return false;
+            } 
+    
+            if (this.m_html_name_smartphone_array.length != this.m_menu_name_array.length)
+            {
+                alert("MenuBigBand The number of main menu names and the number of smartphone HTML file names are not equal");
+    
+                return false;
+            } 
+    
+        } // m_html_name_smartphone_array != null
+
+
+    } // checkConstructorInputData
 
 } // MenuBigBand
 
@@ -857,15 +1067,27 @@ function displayHideContentDivs()
 
     if (browserWindowHasDesktopWidth())
     {   
-        el_div_container_desktop_desktop.style.display = 'block';
-
-        el_div_container_desktop_smartphone.style.display = 'none';
+        if (el_div_container_desktop_desktop != null)
+        {
+            el_div_container_desktop_desktop.style.display = 'block';
+        }
+        
+        if (el_div_container_desktop_smartphone != null)
+        {
+            el_div_container_desktop_smartphone.style.display = 'none';
+        }
     }
     else
     {
-        el_div_container_desktop_desktop.style.display = 'none';
-
-        el_div_container_desktop_smartphone.style.display = 'block';
+        if (el_div_container_desktop_desktop != null)
+        {
+            el_div_container_desktop_desktop.style.display = 'none';
+        }
+        
+        if (el_div_container_desktop_smartphone != null)
+        {
+            el_div_container_desktop_smartphone.style.display = 'block';
+        }
     }
 
 } // displayHideContentDivs
