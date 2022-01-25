@@ -140,6 +140,29 @@ class MenuBigBand
 
     } // menuItemClicked    
 
+    // Size of window was changed from desktop to smartphone or from smartphone to desktop
+    changeOfDesktopSmartphone()
+    {
+        if (this.m_html_name_desktop_array == null)
+        {
+            return;
+        }
+
+        var change_to_web_page = '';
+
+        if (this.currentWebPageIsForDesktop())
+        {
+            change_to_web_page = this.getSmartphoneWebPageForCurrentDesktopWebPage();
+        }
+        else
+        {
+            change_to_web_page = this.getDesktopWebPageForCurrentSmartphoneWebPage();
+        }
+
+        window.location = change_to_web_page;
+
+    } // changeOfDesktopSmartphone
+
     // Dropdown changed
     onChangeDropDown()
     {
@@ -149,9 +172,15 @@ class MenuBigBand
 
         var main_menu_index = select_option_number - 1;
 
-        var name_html_file = this.getDesktopMainMenuHtmlFile(main_menu_index);
-
-        // alert("MenuBigBand.onChangeDropDown select_option_number= " + select_option_number.toString() + ' name_html_file= ' + name_html_file);
+        var name_html_file = 'Undefined';
+        if (this.m_html_name_desktop_array == null)
+        {
+            name_html_file = this.getDesktopMainMenuHtmlFile(main_menu_index);
+        }
+        else
+        {
+            name_html_file = this.getSmartphoneMainMenuHtmlFile(main_menu_index);
+        }
 
         window.location = name_html_file;
 
@@ -397,7 +426,7 @@ class MenuBigBand
     // Returns true if HTML file names for smartphones are defined
     smartphoneHtmlFilesDefined()
     {
-        if (m_html_name_smartphone_array == null)
+        if (this.m_html_name_smartphone_array == null)
         {
             return false;
         }
@@ -595,7 +624,7 @@ class MenuBigBand
     {
         var ret_b_smartphone = false;
 		
-		if (this.m_html_name_desktop_array == null)
+		if (this.m_html_name_smartphone_array == null)
 		{
 			return ret_b_smartphone;
 		}
@@ -604,9 +633,11 @@ class MenuBigBand
 
         var current_web_page = MenuBigBand.getCurrentWebPage();
 
+        var n_names = this.m_html_name_smartphone_array.length;
+
         for (var index_name=0; index_name < n_names; index_name++)
         {
-            var smartphone_html = this.m_html_name_desktop_array[index_name];
+            var smartphone_html = this.m_html_name_smartphone_array[index_name];
 
             if (smartphone_html == current_web_page)
             {
@@ -620,6 +651,100 @@ class MenuBigBand
         return ret_b_smartphone;
 
     } // currentWebPageIsForSmartphone
+
+    // Returns the smartphone web page corresponding to the current desktop web page
+    getSmartphoneWebPageForCurrentDesktopWebPage()
+    {
+        var ret_smartphone_web_page = 'Undefined';
+
+        var current_web_page = MenuBigBand.getCurrentWebPage();
+
+        var err_msg = '';
+
+        if (!this.currentWebPageIsForDesktop())
+        {
+            err_msg = 'getSmartphoneWebPageForCurrentDesktopWebPage Error Current web page ' 
+                + current_web_page + ' is not a desktop web page';
+
+            alert(err_msg);
+
+            return ret_smartphone_web_page;
+        }
+
+        if (this.m_html_name_smartphone_array == null)
+        {
+            err_msg = 'getSmartphoneWebPageForCurrentDesktopWebPage Error  ' 
+                + 'm_html_name_smartphone_array is null';
+
+            alert(err_msg);
+
+            return ret_smartphone_web_page;
+        }
+
+        var n_names = this.m_html_name_desktop_array.length;
+
+        for (var index_name=0; index_name < n_names; index_name++)
+        {
+            var desktop_html = this.m_html_name_desktop_array[index_name];
+
+            if (desktop_html == current_web_page)
+            {
+                ret_smartphone_web_page =  this.m_html_name_smartphone_array[index_name];
+
+                break;
+            }
+        }
+        
+        return ret_smartphone_web_page;
+
+    } // getSmartphoneWebPageForCurrentDesktopWebPage
+
+    // Returns the desktop web page corresponding to the current smartphone web page
+    getDesktopWebPageForCurrentSmartphoneWebPage()
+    {
+        var ret_desktop_web_page = 'Undefined';
+
+        var current_web_page = MenuBigBand.getCurrentWebPage();
+
+        var err_msg = '';
+
+        if (!this.currentWebPageIsForSmartphone())
+        {
+            err_msg = 'getDesktopWebPageForCurrentSmartphoneWebPage Error Current web page ' 
+                + current_web_page + ' is not a desktop web page';
+
+            alert(err_msg);
+
+            return ret_desktop_web_page;
+        }
+
+        if (this.m_html_name_desktop_array == null)
+        {
+            err_msg = 'getDesktopWebPageForCurrentSmartphoneWebPage Error  ' 
+                + 'm_html_name_desktop_array is null';
+
+            alert(err_msg);
+
+            return ret_desktop_web_page;
+        }
+
+        var n_names = this.m_html_name_smartphone_array.length;
+
+        for (var index_name=0; index_name < n_names; index_name++)
+        {
+            var smartphone_html = this.m_html_name_smartphone_array[index_name];
+
+            if (smartphone_html == current_web_page)
+            {
+                ret_desktop_web_page =  this.m_html_name_desktop_array[index_name];
+
+                break;
+            }
+        }
+        
+        return ret_desktop_web_page;
+
+    } // getDesktopWebPageForCurrentSmartphoneWebPage
 	
     // Set the styles for the desktop and smartphone menus
     setStyles()
@@ -1046,6 +1171,8 @@ function setPageWidthDesktopOrSmartphone()
 function eventDeviceWindowSize()
 {
     setPageWidthDesktopOrSmartphone();
+
+    changeOfDesktopSmartphone();
 
     displayHideContentDivs();
 
