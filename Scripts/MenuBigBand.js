@@ -143,7 +143,7 @@ class MenuBigBand
     // Size of window was changed from desktop to smartphone or from smartphone to desktop
     changeOfDesktopSmartphone()
     {
-        if (this.m_html_name_desktop_array == null)
+        if (this.m_html_name_smartphone_array == null)
         {
             return;
         }
@@ -173,7 +173,7 @@ class MenuBigBand
         var main_menu_index = select_option_number - 1;
 
         var name_html_file = 'Undefined';
-        if (this.m_html_name_desktop_array == null)
+        if (this.m_html_name_smartphone_array == null)
         {
             name_html_file = this.getDesktopMainMenuHtmlFile(main_menu_index);
         }
