@@ -1,5 +1,5 @@
 // File: MenuBigBand.js
-// Date: 2022-01-25
+// Date: 2022-01-26
 // Author: Gunnar Lidén
 
 // Inhalt
@@ -1021,6 +1021,7 @@ class MenuBigBand
     
         } // m_html_name_smartphone_array != null
 
+        return true;
 
     } // checkConstructorInputData
 
