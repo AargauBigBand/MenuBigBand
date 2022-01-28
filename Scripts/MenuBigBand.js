@@ -1,5 +1,5 @@
 // File: MenuBigBand.js
-// Date: 2022-01-26
+// Date: 2022-01-28
 // Author: Gunnar Lidén
 
 // Inhalt
@@ -21,23 +21,53 @@ var g_device_desktop_laptop = "Undefined";
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////// Start Control Menu Big Band /////////////////////////////////////
+///////////////////////// Start Input Control Menu Big Band ///////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////
 
+// The class holds all input data for the class MenuBigBand 
+//
+// Compulsory input data
+// - setMenuNamesArray(i_menu_name_array)     
+//   Array with menu names
+// - setHtmlFileNamesDesktopArray(i_html_name_desktop_array) 
+//   Array with HTML file names for desktop corresponding to the array with menu names
+//
+// Input data with default values
+// - setHtmlFileNamesSmartphoneArray(i_html_name_smartphone_array)
+//   Array with HTML file names for smartphone corresponding to the array with menu names
+//   Default value: Array with file names for desktop i_html_name_desktop_array
+// - setIdentityDivMenuDesktop(i_id_div_menu_desktop)
+//   The identity of the container for the desktop menu control
+//   Default value: 'id_div_desktop_menu'
+// - setIdentityDivMenuSmartphone(i_id_div_menu_smartphone)
+//   The identity of the container for the smartphone menu control
+//   Default value: 'id_div_menu_smartphone'
+// - setIdentityDivSmartphoneDropdownMenu(id_smartphone_dropdown_menu)
+//   The identity of the div for the dropdown control (for smartphone)
+//   default value: 'id_smartphone_dropdown_menu'
+// - setDropdownMarginLeft(i_smartphone_drop_down_margin_left)
+//   The left margin for the smartphone dropdown
+//   Default value: '25px'
+// - setDropdownWidth(i_smartphone_drop_down_width)    
+//   The width of the smartphone drop down menu
+//   Default value: '250px'
+// - setDesktopButtonWidth(i_desktop_button_width)
+//   The width of the desktop button
+//   Default value: '90px'
+// - setDesktopButtonBackgroundColor(i_color_str)
+//   The desktop button background color
+//   Default value: 'rgb(44, 61, 158)'
+// - setDesktopButtonPenColor(i_color_str)
+//   The desktop button pen color
+//   Default value: 'white'
+// - setSmartphoneDropDownOnChangeFunctionName(i_onchange_function)
+//   The smartphone dropdown onchange function name.
+//   Default value: 'onChangeSmartphoneMenuDropDown'
 
-// Class for the jazz big band main menu
-// Input data:
-// Identity for the desktop menu <div> 
-// Identity for the smartphone menu <div> 
-// Array of menu names
-// Array of desktop HTML file names corresponding to the menu names
-// Array of smartphone HTML file names corresponding to the menu names
-// The last input array may have the value null. In this case will the 
-// desktop HTML file names also be used for smartphone
-class MenuBigBand
+class MenuBigBandInput
 {
     // Creates the instance of the class
-    constructor(i_id_div_menu_desktop, i_id_div_menu_smartphone, i_menu_name_array, i_html_name_desktop_array, i_html_name_smartphone_array) 
+    constructor() 
     {
         // Member variables
         // ================
@@ -46,38 +76,22 @@ class MenuBigBand
         this.m_id_smartphone_drop_down = "id_smartphone_dropdown_menu";
 
         // The identity of the container for the desktop menu control
-        this.m_id_div_menu_desktop = i_id_div_menu_desktop;
+        this.m_id_div_menu_desktop = "id_div_desktop_menu";
 
         // The identity of the container for the smartphone menu control
-        this.m_id_div_menu_smartphone = i_id_div_menu_smartphone;
-
-        // Current HTML file name (current web page)
-        //QQ this.m_html_file_name = i_html_file_name;
-        this.m_html_file_name = null;
-
-        // The container element for the desktop menu control
-        this.m_el_div_menu_desktop = null;
-
-        // The container element for the smartphone menu control
-        this.m_el_div_menu_smartphone = null;        
-
-        // The class for the menu control
-        this.m_class_dropdown = '';       
+        this.m_id_div_menu_smartphone = "id_div_smartphone_menu";
         
-        // The onchange function name. Only the name is input
+        // The smartphone dropdown onchange function name. Only the name is input
         this.m_onchange_function = 'onChangeSmartphoneMenuDropDown';
 
         // The input menu name array
-        this.m_menu_name_array = i_menu_name_array;
+        this.m_menu_name_array = null;
 
         // The input array of HTML file names corresponding to m_menu_name_array
-        this.m_html_name_desktop_array = i_html_name_desktop_array;
+        this.m_html_name_desktop_array = null;
 
         // The input array of HTML file names for smartphone corresponding to m_menu_name_array
-        this.m_html_name_smartphone_array = i_html_name_smartphone_array;
-
-        // The corresponding number array for smartphone dropdown
-        this.m_drop_down_number_array = [];
+        this.m_html_name_smartphone_array = null;
 
         // The width of the desktop menu button as integer. When used it is px
         this.m_desktop_button_width_int = 90;
@@ -107,16 +121,387 @@ class MenuBigBand
         this.m_smartphone_drop_down_text_align = 'center';
 
         // Text font size for the smartphone drop down menu
-        this.m_smartphone_drop_down_font_size = 'inherit';        
+        this.m_smartphone_drop_down_font_size = 'inherit';
+
+	} // Constructor
+	
+	// Set menu names array
+	setMenuNamesArray(i_menu_name_array)
+	{
+		this.m_menu_name_array = i_menu_name_array;
+		
+	} // setMenuNamesArray
+
+    // Set the HTML file names array for desktop corresponding to m_menu_name_array
+    setHtmlFileNamesDesktopArray(i_html_name_desktop_array)
+    {
+        this.m_html_name_desktop_array = i_html_name_desktop_array;
+
+    } // setHtmlFileNamesDesktopArray
+
+    // Set the HTML file names array for smartphone corresponding to m_menu_name_array
+    setHtmlFileNamesSmartphoneArray(i_html_name_smartphone_array)
+    {
+        this.m_html_name_smartphone_array = i_html_name_smartphone_array;
+
+    } // setHtmlFileNamesDesktopArray
+
+    // Set the identity of the container for the desktop menu control
+    setIdentityDivMenuDesktop(i_id_div_menu_desktop)
+    {
+        this.m_id_div_menu_desktop = i_id_div_menu_desktop;
+
+    } // setIdentityDivMenuDesktop
+
+    // Set the identity of the container for the smartphone menu control
+    setIdentityDivMenuSmartphone(i_id_div_menu_smartphone)
+    {
+        this.m_id_div_menu_smartphone = i_id_div_menu_smartphone;
+
+    } // setIdentityDivMenuSmartphone
+
+    // Set the identity of the div for the dropdown control for smartphone 
+    setIdentityDivSmartphoneDropdownMenu(id_smartphone_dropdown_menu)
+    {
+        this.m_id_smartphone_drop_down = id_smartphone_dropdown_menu;
+
+    } // setIdentityDivSmartphoneDropdownMenu 
+       
+    // Set the left margin for the smartphone dropdown
+    setDropdownMarginLeft(i_smartphone_drop_down_margin_left)
+    {
+        if (!MenuBigBand.checkDimensionInput(i_smartphone_drop_down_margin_left))
+        {
+            return;
+        }
+
+        this.m_smartphone_drop_down_margin_left = i_smartphone_drop_down_margin_left;
+
+    } // setDropdownMarginLeft
+
+    // Set the width of the smartphone dropdown
+    setDropdownWidth(i_smartphone_drop_down_width)
+    {
+        if (!MenuBigBand.checkDimensionInput(i_smartphone_drop_down_width))
+        {
+            return
+        }
+
+        this.m_smartphone_drop_down_width = i_smartphone_drop_down_width;
+
+    } // setDropdownWidth
+
+    // Set the width of the desktop button
+    setDesktopButtonWidth(i_desktop_button_width)
+    {
+        if (!MenuBigBand.checkDimensionInput(i_desktop_button_width))
+        {
+            return;
+        }
+
+        var index_px= i_desktop_button_width.indexOf('px');
+
+        var start_part_str = i_desktop_button_width.substring(0, index_px);
+
+        var desktop_button_width_int = parseInt(start_part_str);
+
+        this.m_desktop_button_width_int = desktop_button_width_int;
+
+    } // setDropdownWidth
+
+    // Set the desktop button background color
+    setDesktopButtonBackgroundColor(i_color_str)
+    {
+        this.m_desktop_button_background_color = i_color_str;
+
+    } // setDesktopButtonColor
+
+    // Set the desktop button pen color
+    setDesktopButtonPenColor(i_color_str)
+    {
+        this.m_desktop_button_pen_color = i_color_str;
+
+    } // setDesktopButtonPenColor
+
+    // The smartphone dropdown onchange function name. Only the name is input
+    setSmartphoneDropDownOnChangeFunctionName(i_onchange_function)
+    {
+        this.m_onchange_function = i_onchange_function;
+
+    } // setSmartphoneDropDownOnChangeFunctionName
+
+
+    // Check input data
+	checkInputData()
+	{
+        var ret_b_check = true;
+
+        if (this.m_menu_name_array == null)
+        {
+            alert("MenuBigBandInput Array with menu names is not set");
+
+            ret_b_check = false;
+
+            return ret_b_check;
+        }
+
+        if (this.m_menu_name_array.length == 0)
+        {
+            alert("MenuBigBandInput Array with menu names is empty");
+
+            ret_b_check = false;
+        }
+
+        if (this.m_html_name_desktop_array == null)
+        {
+            alert("MenuBigBandInput Array with HTML file names for desktop is not set");
+
+            ret_b_check = false;
+
+            return ret_b_check;
+        }
+
+        if (this.m_html_name_desktop_array.length == 0)
+        {
+            alert("MenuBigBandInput Array with HTML file names for desktop is empty");
+
+            ret_b_check = false;
+        }
+
+        if (this.m_menu_name_array.length != this.m_html_name_desktop_array.length)
+        {
+            alert("MenuBigBandInput The number of HTML file names for desktop is not equal to the number of menu names");
+
+            ret_b_check = false;
+        }
+
+        if (this.m_html_name_smartphone_array != null)
+        {
+            if (this.m_html_name_smartphone_array.length == 0)
+            {
+                alert("MenuBigBandInput Array with HTML file names for smartphone is empty");
+    
+                ret_b_check = false;
+            } 
+
+            if (this.m_menu_name_array.length != this.m_html_name_smartphone_array.length)
+            {
+                alert("MenuBigBandInput The number of HTML file names for smartphone is not equal to the number of menu names");
+    
+                ret_b_check = false;
+            }
+
+        } // m_html_name_smartphone_array != null
+
+        var el_div_menu_desktop = document.getElementById(this.m_id_div_menu_desktop);
+
+        var el_div_menu_smartphone = document.getElementById(this.m_id_div_menu_smartphone);
+
+        if (el_div_menu_desktop == null && el_div_menu_smartphone == null)
+        {
+            alert("MenuBigBandInput There must be a <div> with id= " + this.m_id_div_menu_desktop + 
+                        " or a <div> with id= " + this.m_id_div_menu_smartphone + " in the active HTML web page");
+
+            ret_b_check = false;
+
+            return ret_b_check;
+        }
+
+        return ret_b_check;
+	
+	} // checkInputData
+
+	
+} // MenuBigBandInput
+
+///////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////// End Input Control Menu Big Band /////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////// Start Control Menu Big Band /////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
+
+
+// Class for the jazz big band main menu
+// Input data:
+// Identity for the desktop menu <div> 
+// Identity for the smartphone menu <div> 
+// Array of menu names
+// Array of desktop HTML file names corresponding to the menu names
+// Array of smartphone HTML file names corresponding to the menu names
+// The last input array may have the value null. In this case will the 
+// desktop HTML file names also be used for smartphone
+class MenuBigBand
+{
+    // Creates the instance of the class
+    // constructor(i_id_div_menu_desktop, i_id_div_menu_smartphone, i_menu_name_array, i_html_name_desktop_array, i_html_name_smartphone_array) 
+    constructor(i_menu_big_band_input) 
+    {
+        // Member variables
+        // ================
+
+        // Input MenuBigBandInput object with all input data for MenuBigBand
+        this.m_menu_big_band_input = i_menu_big_band_input;
+
+        // The identity of the dropdown control for smartphone 
+        this.m_id_smartphone_drop_down = "Undefined";
+
+        // The identity of the container for the desktop menu control
+        this.m_id_div_menu_desktop = "Undefined";
+
+        // The identity of the container for the smartphone menu control
+        this.m_id_div_menu_smartphone = "Undefined";
+
+        // Current HTML file name (current web page)
+        //QQ this.m_html_file_name = i_html_file_name;
+        this.m_html_file_name = null;
+
+        // The container element for the desktop menu control
+        this.m_el_div_menu_desktop = null;
+
+        // The container element for the smartphone menu control
+        this.m_el_div_menu_smartphone = null;        
+
+        // The class for the menu control
+        this.m_class_dropdown = '';       
+        
+        // The onchange function name. Only the name is input
+        this.m_onchange_function = 'Undefined';
+
+        // The input menu name array
+        this.m_menu_name_array = null;
+
+        // The input array of HTML file names corresponding to m_menu_name_array
+        this.m_html_name_desktop_array = null;
+
+        // The input array of HTML file names for smartphone corresponding to m_menu_name_array
+        this.m_html_name_smartphone_array = null;
+
+        // The corresponding number array for smartphone dropdown
+        this.m_drop_down_number_array = [];
+
+        // The width of the desktop menu button as integer. When used it is px
+        this.m_desktop_button_width_int = -12345;
+
+        // Margin right for the desktop menu button as integer. When used it is px
+        this.m_desktop_button_margin_right_int = -12345;       
+
+        // Margin top and bottom for the desktop menu button as integer. When used it is px
+        this.m_desktop_button_margin_top_bottom_int = -12345;        
+        
+        // Padding top and bottom for the desktop menu button as integer. When used it is px
+        this.m_desktop_button_padding_top_bottom_int = -12345;
+
+        // Desktop menu button background color
+        this.m_desktop_button_background_color = 'Undefined';
+
+        // Desktop menu button pen color
+        this.m_desktop_button_pen_color = 'Undefined';
+        
+        // Width of the smartphone drop down menu
+        this.m_smartphone_drop_down_width = 'Undefined';
+
+        // Margin left the smartphone drop down menu
+        this.m_smartphone_drop_down_margin_left = 'Undefined';
+
+        // Text align for the smartphone drop down menu
+        this.m_smartphone_drop_down_text_align = 'Undefined';
+
+        // Text font size for the smartphone drop down menu
+        this.m_smartphone_drop_down_font_size = 'Undefined';  
 
         // Initialization
         // ==============
 
+        this.setMembersFromMenuBigBandInput();
+
+        this.execMediaQueryEventFunctions();
+
         this.setDivContainerElement();
 
         this.checkSetControl();
+
+        this.setPageWidthDesktopOrSmartphone();
+
+        this.displayHideContentDivs();
     
     } // constructor
+
+    // Set the member variables from the input MenuBigBandInput object
+    setMembersFromMenuBigBandInput()
+    {
+        if (!this.m_menu_big_band_input.checkInputData())
+        {
+            alert("MenuBigBand Input data of MenuBigBandInput is not OK!");
+            return;
+        }
+
+        // The identity of the dropdown control for smartphone 
+        this.m_id_smartphone_drop_down = this.m_menu_big_band_input.m_id_smartphone_drop_down;
+
+        // The identity of the container for the desktop menu control
+        this.m_id_div_menu_desktop = this.m_menu_big_band_input.m_id_div_menu_desktop;
+
+        // The identity of the container for the smartphone menu control
+        this.m_id_div_menu_smartphone = this.m_menu_big_band_input.m_id_div_menu_smartphone;
+
+        // The onchange function name. Only the name is input
+        this.m_onchange_function = this.m_menu_big_band_input.m_onchange_function;
+
+        // The input menu name array
+        this.m_menu_name_array = this.m_menu_big_band_input.m_menu_name_array;
+
+        // The input array of HTML file names corresponding to m_menu_name_array
+        this.m_html_name_desktop_array = this.m_menu_big_band_input.m_html_name_desktop_array;
+
+        // The input array of HTML file names for smartphone corresponding to m_menu_name_array
+        if ( this.m_menu_big_band_input.m_html_name_smartphone_array != null)
+        {
+            this.m_html_name_smartphone_array = this.m_menu_big_band_input.m_html_name_smartphone_array;
+        }
+        else
+        {
+            this.m_html_name_smartphone_array = this.m_menu_big_band_input.m_html_name_desktop_array;
+        }
+
+        // The width of the desktop menu button as integer. When used it is px
+        this.m_desktop_button_width_int = this.m_menu_big_band_input.m_desktop_button_width_int;
+
+        // Margin right for the desktop menu button as integer. When used it is px
+        this.m_desktop_button_margin_right_int = this.m_menu_big_band_input.m_desktop_button_margin_right_int;
+
+        // Margin top and bottom for the desktop menu button as integer. When used it is px
+        this.m_desktop_button_margin_top_bottom_int = this.m_menu_big_band_input.m_desktop_button_margin_top_bottom_int;
+
+        // Padding top and bottom for the desktop menu button as integer. When used it is px
+        this.m_desktop_button_padding_top_bottom_int = this.m_menu_big_band_input.m_desktop_button_padding_top_bottom_int;
+
+        // Desktop menu button background color
+        this.m_desktop_button_background_color = this.m_menu_big_band_input.m_desktop_button_background_color;
+
+        // Desktop menu button pen color
+        this.m_desktop_button_pen_color = this.m_menu_big_band_input.m_desktop_button_pen_color;
+
+        // Width of the smartphone drop down menu
+        this.m_smartphone_drop_down_width = this.m_menu_big_band_input.m_smartphone_drop_down_width;
+
+        // Margin left the smartphone drop down menu
+        this.m_smartphone_drop_down_margin_left = this.m_menu_big_band_input.m_smartphone_drop_down_margin_left;
+
+        // Text align for the smartphone drop down menu
+        this.m_smartphone_drop_down_text_align = this.m_menu_big_band_input.m_smartphone_drop_down_text_align;
+
+        // Text font size for the smartphone drop down menu
+        this.m_smartphone_drop_down_font_size = this.m_menu_big_band_input.m_smartphone_drop_down_font_size;
+
+    } // setMembersFromMenuBigBandInput
+
+    execMediaQueryEventFunctions()
+    {
+        execMediaQueryEventFunctions();
+
+    } // execMediaQueryEventFunctions
 
     // Check input data and set control if data is OK
     checkSetControl()
@@ -127,6 +512,16 @@ class MenuBigBand
         }
 
     } // checkSetControl
+
+    setPageWidthDesktopOrSmartphone()
+    {
+        setPageWidthDesktopOrSmartphone();
+    }
+
+    displayHideContentDivs()
+    {
+        displayHideContentDivs();
+    }
 
     // Event functions
     // ===============
@@ -185,75 +580,6 @@ class MenuBigBand
         window.location = name_html_file;
 
     } // onChangeDropDown
-
-    // Set functions
-    // =============
-
-    // Set the left margin for the smartphone dropdown
-    setDropdownMarginLeft(i_smartphone_drop_down_margin_left)
-    {
-        if (!this.checkDimensionInput(i_smartphone_drop_down_margin_left))
-        {
-            return
-        }
-
-        this.m_smartphone_drop_down_margin_left = i_smartphone_drop_down_margin_left;
-
-        this.setControl();
-
-    } // setDropdownMarginLeft
-
-    // Set the left margin for the smartphone dropdown
-    setDropdownWidth(i_smartphone_drop_down_width)
-    {
-        if (!this.checkDimensionInput(i_smartphone_drop_down_width))
-        {
-            return
-        }
-
-        this.m_smartphone_drop_down_width = i_smartphone_drop_down_width;
-
-        this.setControl();
-
-    } // setDropdownWidth
-
-    // Set the width of the desktop button
-    setDesktopButtonWidth(i_desktop_button_width)
-    {
-        if (!this.checkDimensionInput(i_desktop_button_width))
-        {
-            return
-        }
-
-        var index_px= i_desktop_button_width.indexOf('px');
-
-        var start_part_str = i_desktop_button_width.substring(0, index_px);
-
-        var desktop_button_width_int = parseInt(start_part_str);
-
-        this.m_desktop_button_width_int = desktop_button_width_int;
-
-        this.setControl();
-
-    } // setDropdownWidth
-
-    // Set the desktop button background color
-    setDesktopButtonBackgroundColor(i_color_str)
-    {
-        this.m_desktop_button_background_color = i_color_str;
-
-        this.setControl();
-
-    } // setDesktopButtonColor
-
-    // Set the desktop button pen color
-    setDesktopButtonPenColor(i_color_str)
-    {
-        this.m_desktop_button_pen_color = i_color_str;
-
-        this.setControl();
-
-    } // setDesktopButtonPenColor
 
     // Get HTML strings for the menu buttons
     // =====================================
@@ -873,7 +1199,7 @@ class MenuBigBand
     } // checkContainerElementMenuDesktop    
 
     // Checks the dimension for a length: Height, width, ...
-    checkDimensionInput(i_height_width)
+    static checkDimensionInput(i_height_width)
     {
         var ret_px_check = true;
 
@@ -1054,9 +1380,6 @@ class DesktopSmartphone
 
         // The identity of the container <div> for the smartphone content
         this.m_id_div_container_smartphone = i_id_div_container_smartphone;
-
-        // Current HTML file name (current web page)
-        this.m_html_file_name = i_html_file_name;     
         
         // The container <div> element for the desktop content
         this.m_el_div_container_desktop = null;
